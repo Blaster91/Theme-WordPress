@@ -15,7 +15,6 @@ $(document).ready(function(){
     });
 });
 
-
 /* Display commentaries */
 function showCommentaries(type){
   var commentaries = document.getElementsByClassName('commentary');

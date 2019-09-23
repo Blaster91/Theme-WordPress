@@ -1,21 +1,4 @@
-<html <?php language_attributes(); ?>>
-
-<head>
-    <meta charset="<?php bloginfo( 'charset' ); ?>">
-    <meta name="author" lang="fr" content="Eddy MORLON, Thomas Gallusser">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StartupRR</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="<?php bloginfo('template_directory'); ?>/style.css">
-    <link rel="stylesheet" href="progressBar.css">
-    <link rel="profile" href="http://gmpg.org/xfn/11">
-    <?php if ( is_singular() && pings_open( get_queried_object() ) ) : ?>
-  	<link rel="pingback" href="<?php echo esc_url( get_bloginfo( 'pingback_url' ) ); ?>">
-  	<?php endif; ?>
-    <?php wp_head(); ?>
-</head>
-
-<body>
+<?php get_header(); ?>
   <!-- Header image -->
   <header id="header">
     <section id="logo" class="col-12 p-5">
@@ -71,39 +54,22 @@
       </div>
 
       <div class="container">
-        <div class="row">
-
-
-          <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
-          <div class="col-12 col-md-4 text-center my-5">
-            <div class="rounded-circle bg-dark-grey bg-icons d-inline-block">
+        <div class="row d-flex justify-content-center">
+            <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
+            <div class="card card-article">
               <?php the_post_thumbnail(); ?>
+              <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="card-title"><?php the_title(); ?></h5>
+                <p class="card-text"><?php  the_excerpt(); ?></p>
+                <a class="button-article-card" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><button type="button" class="btn btn-white font-weight-bold smallText">READ MORE</button></a>
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">Last updated 3 mins ago</small>
+              </div>
             </div>
-            <p class="mt-4 txt-title-grey"><?php the_title(); ?></p>
-            <p class="text-center txt-interval-grey"><?php  the_excerpt(); ?></p>
-            <a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><button type="button" class="btn btn-white font-weight-bold smallText">READ MORE</button></a>
-          </div>
           <?php endwhile; else : ?>
           <p>Sorry, no posts were found!</p>
           <?php endif; ?>
-
-          <div class="col-12 col-md-4 text-center my-5">
-            <div class="rounded-circle bg-dark-grey bg-icons d-inline-block">
-              <img src="<?php bloginfo('template_directory'); ?>/img/icon_2.png">
-            </div>
-            <p class="mt-4 txt-title-grey"><b>EASY CUSTOMIZATION</b></p>
-            <p class="text-center txt-interval-grey">Proin in magna a ipsum viverra scelerisq enec turp, Nunc vestibulum fringilla accumsan ornare quis.</p>
-            <button type="button" class="btn btn-white font-weight-bold">READ MORE</button>
-          </div>
-
-          <div class="col-12 col-md-4 text-center my-5">
-            <div class="rounded-circle bg-dark-grey bg-icons d-inline-block">
-              <img src="<?php bloginfo('template_directory'); ?>/img/icon_3.png">
-            </div>
-            <p class="mt-4 txt-title-grey"><b>AWESOME FRIENDLY SUPPORT</b></p>
-            <p class="text-center txt-interval-grey">Proin in magna a ipsum viverra scelerisq enec turp, Nunc vestibulum fringilla accumsan ornare quis.</p>
-            <button type="button" class="btn btn-white font-weight-bold">READ MORE</button>
-          </div>
         </div>
       </div>
     </section>
@@ -1058,15 +1024,6 @@
       </div>
     </div>
 
-    <!-- Scroll button -->
-    <a onclick="topFunction()" class="text-center" id="myBtn" title="Go to top">&#9650;</a>
 
-      <script src="https://kit.fontawesome.com/6fee70888d.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-      <script src="script.js"></script>
-      <?php wp_footer(); ?>
-  </body>
 
-  </html>
+<?php get_footer(); ?>

@@ -4,96 +4,65 @@ $theme = new Theme(array(
     'nav' => 'Navigation'
   )
 ));
-/**
- * ajout de classes
- */
-add_action( 'nav_menu_css_class', 'menu_item_classes', 10, 3 );
-function menu_item_classes( $classes, $item, $args ) {
-    // Gardons seulement les classes qui nous intéressent
-    $classes = array_intersect( $classes, array(
-                               'menu-item',
-                               'current-menu-item',
-                               'current-menu-parent',
-                               'current-menu-ancestor',
-                               'menu-item-has-children'
-                               ) );
-    // Ajoutons la classe pour désigner les éléments vides
-    if ( "#" == $item->url ) {
-        $classes[] = 'empty-item';
-    }
-    // Si nous sommes sur une page single d'un CPT (ici my_cpt)...
-    // ... Ajoutons la classe current-menu-parent sur l'item correspondant à son archive
-    if ( is_singular( 'my_cpt' ) && get_post_type_archive_link( 'my_cpt' ) == $item->url ) {
-        $classes[] = 'current-menu-ancestor';
-    }
-    return $classes;
+
+add_theme_support( 'post-thumbnails' );
+
+function lambda_styles() {
+  wp_register_style('normalize-styles', 'https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css', array(), true);
+  wp_enqueue_style('normalize-styles');
+  wp_register_style('bootstrap-style', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css', array(), true);
+  wp_enqueue_style('bootstrap-style');
+  wp_register_style('main-style', get_template_directory_uri().'/main.css', array(), true);
+  wp_enqueue_style('main-style');
 }
-function start_el( &$output, $item, $depth = 0, $args = array(), $id = 0 ) {
-    $indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';
+add_action( 'wp_enqueue_scripts', 'lambda_styles' );
 
-    $class_names = $value = '';
-
-    $classes = empty( $item->classes ) ? array() : (array) $item->classes;
-    $classes[] = 'menu-item-' . $item->ID;
-
-    $class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args ) );
-    $class_names = $class_names ? ' class="' . esc_attr( $class_names ) . '"' : '';
-
-    $id = apply_filters( 'nav_menu_item_id', 'menu-item-'. $item->ID, $item, $args );
-    $id = $id ? ' id="' . esc_attr( $id ) . '"' : '';
-
-    $output .= $indent . '<li' . $id . $value . $class_names .'>';
-
-    // MODIF 1
-    // $balise = a seulement si il y a un lien et que ce n'est pas une ancre
-    // $balise = a si current-menu-item n'est pas dans les classes
-    $balise = ( ! empty( $item->url ) && substr( $item->url, 0, 1 ) != '#' && ! in_array( 'current-menu-item', $classes ) ) ? 'a' : 'span';
-
-    $atts = array();
-    $atts['title']  = ! empty( $item->attr_title ) ? $item->attr_title : '';
-    $atts['target'] = ! empty( $item->target )     ? $item->target     : '';
-    $atts['rel']    = ! empty( $item->xfn )        ? $item->xfn        : '';
-
-    // MODIF 2 : on n'ajout l'URL seulent si c'est un lien
-    if( 'a' == $balise )
-        $atts['href']   = ! empty( $item->url ) ? $item->url : '';
-
-    $atts = apply_filters( 'nav_menu_link_attributes', $atts, $item, $args );
-
-    $attributes = '';
-    foreach ( $atts as $attr => $value ) {
-        if ( ! empty( $value ) ) {
-            $value = ( 'href' === $attr ) ? esc_url( $value ) : esc_attr( $value );
-            $attributes .= ' ' . $attr . '="' . $value . '"';
-        }
-    }
-
-    // MODIF 3 : on remplace 'a' par $balise
-    $item_output = $args->before;
-    $item_output .= '<' . $balise . ''. $attributes .'>';
-    $item_output .= $args->link_before . apply_filters( 'the_title', $item->title, $item->ID ) . $args->link_after;
-    $item_output .= '</' . $balise . '>';
-    $item_output .= $args->after;
-
-    // MODIF 4
-    // si cet élément a une classe menu-taxonomylist...
-    // on récupère le XFN (correspondant à la taxonomie souhaité)...
-    // on conçoit alors une liste des terms disponibles :-)
-    if( in_array( 'menu-taxonomylist', $classes ) ) {
-        $item_output .= '<ul>';
-        $taxo = ! empty( $item->xfn ) ? $item->xfn : 'category';
-        $item_output .= wp_list_categories(
-            array(
-                'taxonomy'     => $taxo,
-                'echo'         => 0,
-                'title_li'     => '',
-                'hierarchical' => 1
-                )
-            );
-        $item_output .= '</ul>';
-    }
-
-    $output .= apply_filters( 'walker_nav_menu_start_el', $item_output, $item, $depth, $args );
+function lambda_scripts() {
+  wp_register_script('fontawesome-script', 'https://kit.fontawesome.com/6fee70888d.js', array(), true);
+  wp_enqueue_script('fontawesome-script');
+  wp_register_script('jquery-script', 'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js', array(), true);
+  wp_enqueue_script('jquery-script');
+  wp_register_script('popper-script', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js', array(), true);
+  wp_enqueue_script('popper-script');
+  wp_register_script('bootstrap-script', 'https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js', array(), true);
+  wp_enqueue_script('bootstrap-script');
+  wp_register_script('main-script', get_template_directory_uri().'/main.js', array('masonry-script'), true);
+  wp_enqueue_script('main-script');
 }
+add_action( 'wp_footer', 'lambda_scripts' );
+
+function add_Main_Nav() {
+  register_nav_menu('header-menu',__( 'Header Menu' ));
+}
+add_action( 'init', 'add_Main_Nav' );
+
+function my_custom_init(){
+  register_post_type(
+    'picture',
+    array(
+      'label' => 'Pictures',
+      'labels' => array(
+        'name' => 'Pictures',
+        'singular_name' => 'Picture',
+        'all_items' => 'Toutes les images',
+        'add_new_item' => 'Ajouter une image',
+        'edit_item' => 'Éditer l\'image',
+        'new_item' => 'Nouvelle immage',
+        'view_item' => 'Voir l\'image',
+        'search_items' => 'Rechercher parmi les images',
+        'not_found' => 'Pas d\'image trouvée',
+        'not_found_in_trash'=> 'Pas d\'image dans la corbeille'
+        ),
+      'public' => true,
+      'capability_type' => 'post',
+      'supports' => array(
+        'title',
+        'thumbnail'
+      ),
+      'has_archive' => true
+    )
+  );
+}
+add_action('init', 'my_custom_init');
 
 ?>
